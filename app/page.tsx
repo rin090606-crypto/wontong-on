@@ -1,19 +1,44 @@
-export const exams = {
-  1: [
-    "국어 1~5단원",
-    "수학 42~85쪽",
-    "영어 Lesson 3~5",
-  ],
+export default function HomePage() {
+  return (
+    <main className="min-h-screen bg-gray-50 px-5 py-8">
+      <section>
+        <h1 className="text-4xl font-bold text-blue-600">
+          원통ON
+        </h1>
 
-  2: [
-    "생명과학 세포와 물질대사",
-    "화학 탄소화합물",
-    "수학 미분",
-  ],
+        <p className="mt-2 text-gray-500">
+          학생과 학교를 연결하다.
+        </p>
+      </section>
 
-  3: [
-    "국어 수능특강",
-    "영어 모의고사",
-    "생명과학 유전",
-  ],
-};
+      <section className="mt-8 grid gap-4">
+        <div className="rounded-2xl bg-white p-5 shadow-sm">
+          <h2 className="text-lg font-bold text-gray-800">
+            📚 시험 일정
+          </h2>
+          <p className="mt-2 text-gray-500">
+            시험 범위와 D-day를 확인하세요.
+          </p>
+        </div>
+
+        <div className="rounded-2xl bg-white p-5 shadow-sm">
+          <h2 className="text-lg font-bold text-gray-800">
+            🍚 급식 정보
+          </h2>
+          <p className="mt-2 text-gray-500">
+            오늘의 급식과 학생 식사 정보를 확인하세요.
+          </p>
+        </div>
+
+        <div className="rounded-2xl bg-white p-5 shadow-sm">
+          <h2 className="text-lg font-bold text-gray-800">
+            📢 학교 소식
+          </h2>
+          <p className="mt-2 text-gray-500">
+            학생자치회와 학교 공지를 확인하세요.
+          </p>
+        </div>
+      </section>
+    </main>
+  );
+}
