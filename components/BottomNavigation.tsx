@@ -3,46 +3,62 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
+const navigationItems = [
+  {
+    href: "/",
+    label: "홈",
+    icon: "🏠",
+  },
+  {
+    href: "/notice",
+    label: "공지",
+    icon: "📢",
+  },
+  {
+    href: "/calendar",
+    label: "일정",
+    icon: "📅",
+  },
+  {
+    href: "/suggestion",
+    label: "건의",
+    icon: "💬",
+  },
+  {
+    href: "/my",
+    label: "마이",
+    icon: "👤",
+  },
+];
+
 export default function BottomNavigation() {
   const pathname = usePathname();
 
   return (
-    <div className="fixed bottom-0 left-0 w-full bg-white border-t shadow-lg">
-      <div className="grid grid-cols-4 text-center py-3">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-gray-200 bg-white/95 backdrop-blur">
+      <div className="mx-auto grid w-full max-w-md grid-cols-5">
+        {navigationItems.map((item) => {
+          const isActive =
+            item.href === "/"
+              ? pathname === "/"
+              : pathname.startsWith(item.href);
 
-        <Link
-          href="/"
-          className={pathname === "/" ? "text-blue-600 font-bold" : ""}
-        >
-          🏠<br />
-          홈
-        </Link>
-
-        <Link
-          href="/notice"
-          className={pathname.startsWith("/notice") ? "text-blue-600 font-bold" : ""}
-        >
-          📢<br />
-          공지
-        </Link>
-
-        <Link
-          href="/exam"
-          className={pathname.startsWith("/exam") ? "text-blue-600 font-bold" : ""}
-        >
-          📖<br />
-          시험
-        </Link>
-
-        <Link
-          href="/my"
-          className={pathname.startsWith("/my") ? "text-blue-600 font-bold" : ""}
-        >
-          👤<br />
-          마이
-        </Link>
-
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={`flex flex-col items-center justify-center gap-1 py-3 text-xs font-medium transition ${
+                isActive
+                  ? "text-blue-600"
+                  : "text-gray-400 hover:text-gray-600"
+              }`}
+            >
+              <span className="text-xl">{item.icon}</span>
+              <span>{item.label}</span>
+            </Link>
+          );
+        })}
       </div>
-    </div>
+    </nav>
   );
 }
