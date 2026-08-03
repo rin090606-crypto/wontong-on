@@ -167,3 +167,46 @@ export async function POST(request: NextRequest) {
     );
   }
 }
+export async function DELETE(request: NextRequest) {
+  try {
+    const body = await request.json();
+    const noticeId = String(body.noticeId ?? "").trim();
+
+    if (!noticeId) {
+      return NextResponse.json(
+        {
+          message: "삭제할 공지 정보가 없습니다.",
+        },
+        { status: 400 },
+      );
+    }
+
+    const supabase = adminClient();
+
+    const { error } = await supabase
+      .from("notices")
+      .delete()
+      .eq("id", noticeId);
+
+    if (error) {
+      throw error;
+    }
+
+    return NextResponse.json({
+      success: true,
+      message: "공지를 삭제했습니다.",
+    });
+  } catch (error) {
+    console.error("공지 삭제 오류:", error);
+
+    return NextResponse.json(
+      {
+        message:
+          error instanceof Error
+            ? error.message
+            : "공지 삭제에 실패했습니다.",
+      },
+      { status: 500 },
+    );
+  }
+}

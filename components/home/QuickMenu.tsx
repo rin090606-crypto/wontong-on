@@ -8,6 +8,12 @@ const menuItems = [
     description: "시험 범위와 D-day를 확인하세요.",
   },
   {
+    href: "/timetable",
+    icon: "🗓️",
+    title: "시간표",
+    description: "오늘 수업과 학년별 시간표를 확인하세요.",
+  },
+  {
     href: "/notice",
     icon: "📢",
     title: "학교 소식",
@@ -35,7 +41,7 @@ export default function QuickMenu() {
           빠른 메뉴
         </h2>
 
-        <span className="text-xs font-medium text-gray-400">
+        <span className="text-xs font-medium text-gray-600">
           자주 쓰는 기능
         </span>
       </div>
@@ -55,7 +61,7 @@ export default function QuickMenu() {
               {item.title}
             </h3>
 
-            <p className="mt-1 text-xs leading-5 text-gray-500">
+            <p className="mt-1 text-xs leading-5 text-gray-600">
               {item.description}
             </p>
           </Link>
