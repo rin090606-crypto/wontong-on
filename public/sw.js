@@ -1,26 +1,37 @@
+self.addEventListener("install", () => {
+  self.skipWaiting();
+});
+
+self.addEventListener("activate", (event) => {
+  event.waitUntil(self.clients.claim());
+});
+
 self.addEventListener("push", (event) => {
   let data = {
     title: "원통ON",
-    body: "새로운 소식이 도착했습니다.",
+    body: "새로운 공지가 등록되었습니다.",
     url: "/notice",
   };
 
-  if (event.data) {
-    try {
-      data = { ...data, ...event.data.json() };
-    } catch {
-      data.body = event.data.text();
+  try {
+    if (event.data) {
+      data = {
+        ...data,
+        ...event.data.json(),
+      };
     }
+  } catch {
+    // 기본 알림 내용을 사용합니다.
   }
 
   event.waitUntil(
     self.registration.showNotification(data.title, {
       body: data.body,
-      icon: "/favicon.ico",
-      badge: "/favicon.ico",
-      data: { url: data.url || "/notice" },
-      tag: data.tag || "wontong-on-notice",
-      renotify: true,
+      icon: "/icon-192.png",
+      badge: "/icon-192.png",
+      data: {
+        url: data.url,
+      },
     }),
   );
 });
@@ -28,20 +39,20 @@ self.addEventListener("push", (event) => {
 self.addEventListener("notificationclick", (event) => {
   event.notification.close();
 
-  const targetUrl = new URL(
-    event.notification.data?.url || "/notice",
-    self.location.origin,
-  ).href;
+  const targetUrl = event.notification.data?.url || "/notice";
 
   event.waitUntil(
-    clients.matchAll({ type: "window", includeUncontrolled: true }).then((list) => {
-      for (const client of list) {
-        if (client.url === targetUrl && "focus" in client) {
-          return client.focus();
+    clients.matchAll({ type: "window", includeUncontrolled: true }).then(
+      (clientList) => {
+        for (const client of clientList) {
+          if ("focus" in client) {
+            client.navigate(targetUrl);
+            return client.focus();
+          }
         }
-      }
 
-      return clients.openWindow ? clients.openWindow(targetUrl) : undefined;
-    }),
+        return clients.openWindow(targetUrl);
+      },
+    ),
   );
 });

@@ -1,0 +1,15 @@
+원통ON 마지막 PWA·로그아웃 설치 순서
+
+1. ZIP 압축을 풉니다.
+2. 안의 app 폴더와 public 폴더를 복사합니다.
+3. C:\Users\young\wontong-on 안에 붙여넣습니다.
+4. 같은 파일이 있다고 나오면 '대상 폴더의 파일 바꾸기'를 누릅니다.
+5. 서버 실행: npm.cmd run dev
+6. http://localhost:3000/my 에서 관리자 센터와 로그아웃 버튼을 확인합니다.
+7. GitHub 배포:
+   git add .
+   git commit -m "feat: add logout admin shortcut and PWA"
+   git push origin main
+8. Vercel 배포 완료 후:
+   아이폰 Safari → 공유 → 홈 화면에 추가
+   안드로이드 Chrome → 메뉴 → 앱 설치 또는 홈 화면에 추가

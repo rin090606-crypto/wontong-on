@@ -1,103 +1,244 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import Link from "next/link";
 
-const menus = [
+type Stats = {
+  waiting: number;
+  approved: number;
+  totalPoints: number;
+  unresolvedSuggestions: number;
+};
+
+type RecentStudent = {
+  id: string;
+  student_id: string;
+  name: string;
+  grade: number;
+  class_no: number;
+  student_number: number;
+  approved: boolean;
+  role: "student" | "admin";
+  points: number;
+};
+
+const menuItems = [
   {
     href: "/manager/notices",
     icon: "📢",
     title: "공지 관리",
-    desc: "새 공지를 등록하고 푸시 알림을 보냅니다.",
-    badge: "운영 중",
+    description: "공지 작성과 푸시 알림",
+  },
+  {
+    href: "/manager/students",
+    icon: "👥",
+    title: "학생 승인",
+    description: "가입 승인·거절과 권한 관리",
+  },
+  {
+    href: "/manager/search",
+    icon: "🔎",
+    title: "학생 검색",
+    description: "이름·학번으로 학생 찾기",
+  },
+  {
+    href: "/manager/points",
+    icon: "⭐",
+    title: "포인트 관리",
+    description: "포인트 지급과 차감",
   },
   {
     href: "/manager/suggestions",
     icon: "💬",
     title: "건의 관리",
-    desc: "학생 건의를 확인하고 답변과 상태를 관리합니다.",
-    badge: "운영 중",
+    description: "익명 건의 확인과 답변",
   },
   {
-    href: "/calendar",
-    icon: "📅",
-    title: "일정 관리",
-    desc: "학교 및 학생회 일정을 확인합니다.",
-    badge: "연결됨",
-  },
-  {
-    href: "/manager/members",
-    icon: "👥",
-    title: "회원 관리",
-    desc: "학생 가입 승인과 권한 관리를 준비 중입니다.",
-    badge: "준비 중",
+    href: "/ranking",
+    icon: "🏆",
+    title: "포인트 랭킹",
+    description: "학생용 TOP 10 화면 확인",
   },
 ];
 
 export default function ManagerPage() {
-  return (
-    <main className="min-h-screen bg-slate-50 px-4 py-8 sm:px-6">
-      <div className="mx-auto max-w-5xl">
-        <section className="overflow-hidden rounded-[32px] border border-blue-100 bg-gradient-to-br from-blue-600 via-blue-500 to-indigo-500 p-7 text-white shadow-xl shadow-blue-100 sm:p-9">
-          <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <p className="text-sm font-extrabold tracking-[0.18em] text-blue-100">
-                WONTONG ON · ADMIN
-              </p>
-              <h1 className="mt-3 text-3xl font-black sm:text-4xl">
-                학생회 관리자 센터
-              </h1>
-              <p className="mt-3 max-w-xl text-sm leading-6 text-blue-50 sm:text-base">
-                공지, 일정, 학생 건의와 회원 정보를 한곳에서 관리합니다.
-              </p>
-            </div>
+  const [stats, setStats] = useState<Stats>({
+    waiting: 0,
+    approved: 0,
+    totalPoints: 0,
+    unresolvedSuggestions: 0,
+  });
+  const [recentStudents, setRecentStudents] = useState<RecentStudent[]>([]);
+  const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(true);
 
-            <Link
-              href="/"
-              className="inline-flex w-fit items-center justify-center rounded-2xl bg-white/95 px-4 py-3 text-sm font-black text-blue-700 shadow-sm transition hover:-translate-y-0.5 hover:bg-white"
-            >
-              학생 홈 보기
-            </Link>
-          </div>
+  useEffect(() => {
+    async function loadDashboard() {
+      try {
+        const response = await fetch("/api/admin/dashboard", {
+          cache: "no-store",
+        });
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.message || "관리자 현황 조회 실패");
+        }
+
+        setStats(data.stats);
+        setRecentStudents(data.recentStudents ?? []);
+      } catch (error) {
+        setMessage(
+          error instanceof Error
+            ? error.message
+            : "관리자 현황을 불러오지 못했습니다.",
+        );
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    void loadDashboard();
+  }, []);
+
+  const statCards = [
+    {
+      label: "가입 승인 대기",
+      value: `${stats.waiting}명`,
+      href: "/manager/students",
+    },
+    {
+      label: "승인 학생",
+      value: `${stats.approved}명`,
+      href: "/manager/students",
+    },
+    {
+      label: "총 보유 포인트",
+      value: `${stats.totalPoints.toLocaleString()}P`,
+      href: "/manager/points",
+    },
+    {
+      label: "미처리 건의",
+      value: `${stats.unresolvedSuggestions}건`,
+      href: "/manager/suggestions",
+    },
+  ];
+
+  return (
+    <main className="min-h-screen bg-slate-50 px-4 py-8">
+      <div className="mx-auto max-w-6xl">
+        <section className="overflow-hidden rounded-[32px] bg-gradient-to-br from-blue-700 via-blue-600 to-indigo-500 p-7 text-white shadow-xl sm:p-9">
+          <p className="text-sm font-black tracking-[0.2em] text-blue-100">
+            WONTONG ON ADMIN
+          </p>
+          <h1 className="mt-3 text-3xl font-black sm:text-4xl">
+            관리자 대시보드
+          </h1>
+          <p className="mt-3 max-w-xl text-sm leading-6 text-blue-100">
+            학생 승인, 공지, 건의, 포인트 현황을 한 화면에서 관리하세요.
+          </p>
         </section>
 
-        <section className="mt-7 grid gap-4 sm:grid-cols-2">
-          {menus.map((menu) => (
+        {message && (
+          <p className="mt-5 rounded-2xl bg-red-50 px-4 py-3 text-sm font-bold text-red-700">
+            {message}
+          </p>
+        )}
+
+        <section className="mt-6 grid grid-cols-2 gap-3 lg:grid-cols-4">
+          {statCards.map((card) => (
             <Link
-              key={menu.href}
-              href={menu.href}
-              className="group rounded-3xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:border-blue-200 hover:shadow-lg hover:shadow-blue-100/70"
+              key={card.label}
+              href={card.href}
+              className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
+            >
+              <p className="text-xs font-black text-slate-400">{card.label}</p>
+              <p className="mt-2 text-2xl font-black text-slate-900">
+                {loading ? "-" : card.value}
+              </p>
+            </Link>
+          ))}
+        </section>
+
+        <section className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {menuItems.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className="group rounded-3xl border border-slate-200 bg-white p-5 shadow-sm transition hover:border-blue-300 hover:shadow-md"
             >
               <div className="flex items-start gap-4">
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-blue-50 text-2xl ring-1 ring-blue-100">
-                  {menu.icon}
-                </div>
-
-                <div className="min-w-0 flex-1">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <h2 className="text-lg font-extrabold text-slate-900">
-                      {menu.title}
-                    </h2>
-                    <span className="rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-extrabold text-slate-500">
-                      {menu.badge}
-                    </span>
-                  </div>
-                  <p className="mt-2 text-sm leading-6 text-slate-500">
-                    {menu.desc}
+                <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-blue-50 text-2xl">
+                  {item.icon}
+                </span>
+                <div>
+                  <h2 className="font-black text-slate-900 group-hover:text-blue-700">
+                    {item.title}
+                  </h2>
+                  <p className="mt-1 text-sm leading-5 text-slate-500">
+                    {item.description}
                   </p>
                 </div>
-
-                <span className="mt-1 text-xl font-bold text-slate-300 transition group-hover:translate-x-1 group-hover:text-blue-500">
-                  →
-                </span>
               </div>
             </Link>
           ))}
         </section>
 
-        <section className="mt-7 rounded-3xl border border-blue-100 bg-blue-50 p-5 sm:p-6">
-          <p className="text-sm font-extrabold text-blue-700">관리자 안내</p>
-          <p className="mt-2 text-sm leading-6 text-blue-900/80">
-            공지 등록 시 푸시 알림 보내기를 선택하면 알림을 허용한 학생들에게
-            즉시 전송됩니다.
-          </p>
+        <section className="mt-6 rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <h2 className="text-lg font-black text-slate-900">
+                최근 가입 학생
+              </h2>
+              <p className="mt-1 text-sm text-slate-500">
+                최근 등록된 계정 5개입니다.
+              </p>
+            </div>
+            <Link
+              href="/manager/search"
+              className="rounded-xl bg-blue-50 px-3 py-2 text-sm font-black text-blue-700"
+            >
+              전체 검색
+            </Link>
+          </div>
+
+          <div className="mt-4 divide-y divide-slate-100">
+            {!loading && recentStudents.length === 0 ? (
+              <p className="py-8 text-center text-sm text-slate-400">
+                가입한 학생이 없습니다.
+              </p>
+            ) : (
+              recentStudents.map((student) => (
+                <div
+                  key={student.id}
+                  className="flex items-center justify-between gap-4 py-4"
+                >
+                  <div>
+                    <p className="font-black text-slate-900">
+                      {student.name}
+                    </p>
+                    <p className="mt-1 text-sm text-slate-500">
+                      {student.grade}학년 {student.class_no}반{" "}
+                      {student.student_number}번 · {student.student_id}
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-black text-blue-700">
+                      {student.points ?? 0}P
+                    </p>
+                    <p
+                      className={`mt-1 text-xs font-bold ${
+                        student.approved
+                          ? "text-emerald-600"
+                          : "text-orange-500"
+                      }`}
+                    >
+                      {student.approved ? "승인 완료" : "승인 대기"}
+                    </p>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
         </section>
       </div>
     </main>
