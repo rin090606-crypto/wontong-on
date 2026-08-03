@@ -1,6 +1,77 @@
 "use client";
+
 import { supabase } from "@/lib/supabase";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-type Notice={id:string;title:string;category:string;created_at:string};
-export default function NoticeCard(){const [items,setItems]=useState<Notice[]>([]);useEffect(()=>{supabase.from("notices").select("id,title,category,created_at").order("created_at",{ascending:false}).limit(3).then(({data})=>setItems(data??[]));},[]);return <section className="rounded-3xl bg-white p-6 shadow-sm"><div className="flex justify-between"><div><p className="text-xs font-bold text-blue-600">새로운 소식</p><h2 className="mt-1 text-lg font-bold">최신 공지</h2></div><Link href="/notice" className="text-sm font-bold text-blue-600">전체보기 ›</Link></div><div className="mt-4 divide-y">{items.length?items.map(n=><Link key={n.id} href={`/notice/${n.id}`} className="block py-4"><div className="flex gap-3"><span className="rounded-full bg-blue-50 px-2.5 py-1 text-xs font-bold text-blue-600">{n.category}</span><div className="min-w-0"><h3 className="truncate text-sm font-bold">{n.title}</h3><p className="mt-1 text-xs text-slate-400">{new Date(n.created_at).toLocaleDateString("ko-KR")}</p></div></div></Link>):<p className="py-5 text-sm text-slate-400">등록된 공지가 없습니다.</p>}</div></section>}
+
+type Notice = {
+  id: string;
+  title: string;
+  category: string;
+  created_at: string;
+};
+
+export default function NoticeCard() {
+  const [items, setItems] = useState<Notice[]>([]);
+
+  useEffect(() => {
+    supabase
+      .from("notices")
+      .select("id,title,category,created_at")
+      .order("created_at", { ascending: false })
+      .limit(3)
+      .then(({ data }) => setItems(data ?? []));
+  }, []);
+
+  return (
+    <section className="rounded-3xl bg-white p-6 text-slate-900 shadow-sm">
+      <div className="flex justify-between gap-4">
+        <div>
+          <p className="text-xs font-bold text-blue-600">새로운 소식</p>
+          <h2 className="mt-1 text-lg font-bold text-slate-900">
+            최신 공지
+          </h2>
+        </div>
+
+        <Link
+          href="/notice"
+          className="text-sm font-bold text-blue-600"
+        >
+          전체보기 ›
+        </Link>
+      </div>
+
+      <div className="mt-4 divide-y divide-slate-200">
+        {items.length ? (
+          items.map((notice) => (
+            <Link
+              key={notice.id}
+              href={`/notice/${notice.id}`}
+              className="block py-4"
+            >
+              <div className="flex gap-3">
+                <span className="h-fit rounded-full bg-blue-50 px-2.5 py-1 text-xs font-bold text-blue-700">
+                  {notice.category}
+                </span>
+
+                <div className="min-w-0">
+                  <h3 className="truncate text-sm font-bold text-slate-900">
+                    {notice.title}
+                  </h3>
+
+                  <p className="mt-1 text-xs font-medium text-slate-600">
+                    {new Date(notice.created_at).toLocaleDateString("ko-KR")}
+                  </p>
+                </div>
+              </div>
+            </Link>
+          ))
+        ) : (
+          <p className="py-5 text-sm font-medium text-slate-600">
+            등록된 공지가 없습니다.
+          </p>
+        )}
+      </div>
+    </section>
+  );
+}
