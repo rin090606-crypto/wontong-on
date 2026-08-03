@@ -155,7 +155,7 @@ export default function ManagerNoticesPage() {
               onChange={(event) => setContent(event.target.value)}
               rows={10}
               placeholder="학생들에게 전달할 내용을 입력하세요."
-              className="mt-2 w-full resize-none rounded-2xl border border-slate-200 px-4 py-3 leading-7 text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-50"
+              className="mt-2 w-full resize-none rounded-2xl border border-slate-200 px-4 py-3 leading-7 text-slate-800 outline-none transition placeholder:text-slate-600 focus:border-blue-500 focus:ring-4 focus:ring-blue-50"
             />
 
             <label className="mt-4 flex cursor-pointer items-center gap-3 rounded-2xl border border-blue-100 bg-blue-50 p-4 text-sm font-extrabold text-blue-800">
@@ -218,7 +218,7 @@ export default function ManagerNoticesPage() {
                       <span className="rounded-full bg-blue-50 px-2.5 py-1 text-xs font-extrabold text-blue-700">
                         {notice.category}
                       </span>
-                      <span className="text-xs text-slate-400">
+                      <span className="text-xs text-slate-600">
                         {new Date(notice.created_at).toLocaleDateString("ko-KR")}
                       </span>
                     </div>
