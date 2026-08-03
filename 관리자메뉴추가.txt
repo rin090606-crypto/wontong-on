@@ -1,0 +1,11 @@
+app/manager/page.tsx의 menuItems 배열 안에 아래 항목을 추가하세요.
+
+{
+  href: "/manager/exams",
+  icon: "📚",
+  title: "시험범위 관리",
+  description: "학년별 시험범위 등록·수정",
+},
+
+관리자 주소:
+http://localhost:3000/manager/exams
