@@ -49,8 +49,26 @@ function formatShortDate(date: Date) {
   return `${date.getMonth() + 1}/${date.getDate()}`;
 }
 
+function weekdayKey(date: string) {
+  const year = Number(date.slice(0, 4));
+  const month = Number(date.slice(4, 6)) - 1;
+  const day = Number(date.slice(6, 8));
+  const weekday = new Date(year, month, day).getDay();
+  return weekday === 0 ? 7 : weekday;
+}
+
 function slotKey(date: string, period: number, grade: string) {
-  return `${grade}-${date}-${period}`;
+  return `${grade}-weekday-${weekdayKey(date)}-period-${period}`;
+}
+
+function lessonChoiceId(lesson: Lesson) {
+  return [
+    lesson.subject,
+    lesson.className,
+    lesson.roomName,
+    lesson.department,
+    lesson.orderName,
+  ].join("|");
 }
 
 function lessonLabel(lesson: Lesson) {
@@ -70,6 +88,7 @@ export default function TimetablePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [hydrated, setHydrated] = useState(false);
+  const [saveMessage, setSaveMessage] = useState("");
 
   const weekDays = useMemo(
     () => Array.from({ length: 5 }, (_, index) => addDays(weekStart, index)),
@@ -179,7 +198,7 @@ export default function TimetablePage() {
     const key = slotKey(date, period, grade);
     const { all, recommended } = candidatesFor(date, period);
     const savedId = choices[key];
-    const saved = all.find((lesson) => lesson.id === savedId);
+    const saved = all.find((lesson) => lessonChoiceId(lesson) === savedId);
 
     if (saved) return saved;
     if (recommended.length === 1) return recommended[0];
@@ -189,8 +208,10 @@ export default function TimetablePage() {
 
   function chooseLesson(date: string, period: number, lesson: Lesson) {
     const key = slotKey(date, period, grade);
-    setChoices((current) => ({ ...current, [key]: lesson.id }));
+    setChoices((current) => ({ ...current, [key]: lessonChoiceId(lesson) }));
     setEditingSlot(null);
+    setSaveMessage(`${lesson.subject} 수업을 저장했어요.`);
+    window.setTimeout(() => setSaveMessage(""), 1800);
   }
 
   function clearChoice(date: string, period: number) {
@@ -200,6 +221,8 @@ export default function TimetablePage() {
       delete next[key];
       return next;
     });
+    setSaveMessage("저장한 선택을 지웠어요.");
+    window.setTimeout(() => setSaveMessage(""), 1800);
   }
 
   const isCurrentWeek =
@@ -221,6 +244,12 @@ export default function TimetablePage() {
           📚
         </div>
       </header>
+
+      {saveMessage ? (
+        <div className="fixed left-1/2 top-5 z-[70] -translate-x-1/2 rounded-full bg-slate-900 px-5 py-3 text-sm font-black text-white shadow-xl">
+          ✓ {saveMessage}
+        </div>
+      ) : null}
 
       <section className="mt-6 rounded-3xl bg-white p-5 shadow-sm">
         <div className="grid grid-cols-2 gap-3">
@@ -265,7 +294,7 @@ export default function TimetablePage() {
 
         <div className="mt-4 rounded-2xl bg-blue-50 p-4 text-xs leading-5 text-blue-700">
           선택과목 시간에 후보가 여러 개 나오면 수업을 눌러 내 과목으로
-          저장하면 돼요. 선택 정보는 이 기기에 저장됩니다.
+          저장하면 돼요. 한 번 선택한 수업은 같은 요일·교시에 다음 주에도 자동으로 적용됩니다.
         </div>
       </section>
 

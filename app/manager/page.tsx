@@ -24,6 +24,12 @@ type RecentStudent = {
 
 const menuItems = [
   {
+    href: "/manager/mealpass",
+    icon: "🍽️",
+    title: "급식실 패스",
+    description: "신청 승인과 반려 관리",
+  },
+  {
     href: "/manager/notices",
     icon: "📢",
     title: "공지 관리",

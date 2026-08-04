@@ -14,6 +14,12 @@ const menuItems = [
     description: "오늘 수업과 학년별 시간표를 확인하세요.",
   },
   {
+    href: "/mealpass",
+    icon: "🍽️",
+    title: "급식실 패스",
+    description: "급식실 입장용 학생 패스를 확인하세요.",
+  },
+  {
     href: "/notice",
     icon: "📢",
     title: "학교 소식",

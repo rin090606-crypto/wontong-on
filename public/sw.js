@@ -27,8 +27,8 @@ self.addEventListener("push", (event) => {
   event.waitUntil(
     self.registration.showNotification(data.title, {
       body: data.body,
-      icon: "/icon-192.png",
-      badge: "/icon-192.png",
+      icon: "/wontong-on-icon-192-v2.png",
+      badge: "/wontong-on-icon-192-v2.png",
       data: {
         url: data.url,
       },

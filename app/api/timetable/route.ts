@@ -136,7 +136,7 @@ export async function GET(request: NextRequest) {
     const rows: NeisTimetableRow[] = data?.hisTimetable?.[1]?.row ?? [];
 
     const lessons = rows
-      .map((row, index) => ({
+      .map((row) => ({
         id: [
           row.ALL_TI_YMD ?? "",
           row.PERIO ?? "",
@@ -144,7 +144,8 @@ export async function GET(request: NextRequest) {
           row.CLASS_NM ?? "",
           row.CLRM_NM ?? "",
           row.ITRT_CNTNT ?? "",
-          String(index),
+          row.DDDEP_NM ?? "",
+          row.ORD_SC_NM ?? "",
         ].join("-"),
         date: row.ALL_TI_YMD ?? "",
         grade: row.GRADE ?? grade,
